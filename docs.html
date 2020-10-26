@@ -47,7 +47,7 @@
 		function openPage(content)
 		{
 			$(".page_loader").show();
-
+			$("#content_frame").contents().find('html').html("");
 
 			$.get("docs/" + api_version + "/" + content + ".html", function( data ) {
 				$("#content_frame").contents().find('html').html((struct + "").replace("$content$",data));
