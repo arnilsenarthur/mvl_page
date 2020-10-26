@@ -49,7 +49,7 @@
 			$(".page_loader").show();
 
 
-			$.get(content, function( data ) {
+			$.get("docs/" + api_version + "/" + content + ".html", function( data ) {
 				$("#content_frame").contents().find('html').html((struct + "").replace("$content$",data));
 				$(".page_loader").hide();
 			});
