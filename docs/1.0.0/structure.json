@@ -1,0 +1,33 @@
+{
+	"default": "hello",
+	"structure": [
+		{
+			"title":"Welcome To MVL",
+			"id":"hello"
+		},
+		{
+			"title":"More Items",
+			"id": "hbt",
+			"structure": [
+				{
+					"title": "Plut plat",
+					"id":"bestseller"
+				},
+				{
+					"title": "Harry Potter",
+					"id":"harrypotter",
+					"marks": [
+						"Title",
+						"Second Section",
+						"Middle Section",
+						"Last section"
+					]
+				}
+			]
+		},
+		{
+			"title":"Creating Items",
+			"id":"items"
+		}
+	]
+}

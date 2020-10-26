@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<link rel="stylesheet" href="lib/styles/androidstudio.css">
+	<script src="lib/highlight.js"></script>
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="docs_style.css">
+
+
+	<script>hljs.initHighlightingOnLoad();</script>
+	<script type="text/javascript">
+		//Sidebar buttons
+		$( document ).ready(function() {
+			
+		});
+
+
+
+		//Remover Errors
+		window.onerror = function(message, url, lineNumber) {  
+        	return true;
+    	};
+
+    	var struct = "";
+
+    	//Load struct file
+    	$.get("docs_struct.html", function( data ) 
+    	{
+    		struct = data;
+    	});
+
+
+    	//Open Page
+		function openPage(content)
+		{
+			$(".page_loader").show();
+
+
+			$.get(content, function( data ) {
+				$("#content_frame").contents().find('html').html((struct + "").replace("$content$",data));
+				$(".page_loader").hide();
+			});
+			
+
+			window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + content;
+		}
+
+		function goToMarker(marker)
+		{
+
+		}
+
+		//Get url parameter
+		var getUrlParameter = function getUrlParameter(sParam) {
+		    var sPageURL = window.location.search.substring(1),
+		        sURLVariables = sPageURL.split('&'),
+		        sParameterName,
+		        i;
+
+		    for (i = 0; i < sURLVariables.length; i++) {
+		        sParameterName = sURLVariables[i].split('=');
+
+		        if (sParameterName[0] === sParam) {
+		            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+		        }
+		    }
+		};
+
+		var api_version = getUrlParameter("api-version");
+
+		if(api_version == undefined)
+		{
+			window.location.href = window.location.href.split("?")[0] + "?api-version=1.0.0";
+		}
+
+
+		//Page (If not open hello page of apiversion)
+		var cur_page_path = window.location.hash.substr(1);
+
+
+		//Load versions info
+		var versions_info;
+
+		var current_structure = null;
+
+		$.getJSON("docs/versions.json", function( data ) {
+			versions_info = data;
+
+			if(versions_info[api_version] == null)
+			{
+				window.location.href = window.location.href.split("?")[0] + "?api-version=1.0.0";
+				return;
+			}
+
+			//Get info and load menu
+			$.getJSON("docs/" + api_version + "/structure.json", function( data ) 
+			{
+				console.log(data);
+				current_structure = data;
+
+				//Check path
+				let path = cur_page_path.split("_");
+
+				let cob = current_structure;
+
+				let found = false;
+
+				for(let i = 0; i < path.length; i ++)
+				{
+					found = false;
+
+					if(cob.structure == null)
+					{
+						window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+							return;
+					}
+
+					for(let j = 0; j < cob.structure.length; j ++)
+					{
+						if(cob.structure[j].id == null)
+						{
+							window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+							return;
+						}
+
+						if(cob.structure[j].id == path[i])
+						{
+							found = true;
+							cob = cob.structure[j];
+							break;
+						}
+					}
+				}
+
+				if(!found)
+				{
+					window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+							return;
+				}
+
+
+				//Load side bar info
+				var ls_data = "";
+
+				function iterateOver(ob,st)
+				{
+					for(let i = 0; i < ob.length; i ++)
+					{
+						let key = (st + "_" + ob[i].id);
+
+						if(ob[i].structure == null)
+						{
+							if(ob[i].marks == null)
+							{
+								ls_data += '<a class="mitem" key="' + key.substring(1) + '">' + ob[i].title + '</a>\n'
+							}
+							else
+							{
+								ls_data += '<a class="mitem autoopenable" key="' +  key.substring(1) + '">' + ob[i].title + '</a>\n'
+
+								ls_data += '<div class="mitem_content">';
+								for(let j = 0; j < ob[i].marks.length; j ++)
+								{
+									ls_data += '<a class="mitem marker" key="mk_' + j + '">' + ob[i].marks[j] + '</a>\n'
+								}
+
+								ls_data += '</div>';
+							}
+						}
+						else
+						{
+							ls_data += '<a class="mitem openable" key="' +  key.substring(1) + '"><i class="material-icons mitem_arrow">keyboard_arrow_up</i>' + ob[i].title + '</a>\n'
+
+							ls_data += '<div class="mitem_content">';
+
+							iterateOver(ob[i].structure,key);
+
+							ls_data += '</div>';
+						}
+
+						if(st == "")
+						{
+							$(ls_data).insertBefore(".nav_loader");
+							ls_data = "";
+						}
+					}
+
+					if(st == "")
+					{
+						$(".nav_loader").remove();
+					}					
+				}
+
+				iterateOver(current_structure.structure,"");
+				// <a class="mitem" key="item_c_cc">C CC</a>
+				//$(".mdl-navigation").html(ls_data);
+
+				//Open page and choose selector
+				$('.mitem[key="' + cur_page_path + '"]').addClass("choosen");
+				openPage(cur_page_path);
+
+				//End
+				$(".mitem.openable").on('click', function(event){
+
+				   	if($(this).hasClass("open"))
+				   	{
+				   		$(this).removeClass("open");
+				   	}
+				   	else
+				   	{
+				   		$(this).addClass("open");
+				   	}
+				});
+
+				$(".mitem:not(.openable)").on('click', function(event){
+
+
+					if($(this).hasClass("marker"))
+					{
+						$(".mitem.choosen.marker").removeClass("choosen");
+						$(this).addClass("choosen");
+						goToMarker($(this).attr("key"));
+					}
+					else
+					{
+						$(".mitem.choosen.autoopenable").removeClass("open");
+						$(".mitem.choosen").removeClass("choosen");
+
+						//Open page
+						$(this).addClass("choosen");
+						$(".mitem.choosen.autoopenable").addClass("open");
+
+					   	$(this).next().find('.marker').first().addClass("choosen");
+
+					   	openPage($(this).attr("key"));
+					}
+					
+				});
+			});
+		});
+
+
+		
+
+		
+
+
+		
+
+	</script>
+	<style type="text/css">
+		html,body
+		{
+			margin: 0px;
+			padding: 0px;
+			border: 0px;
+			height: 100%;
+		
+		}
+	</style>
+	<body>
+
+		
+
+
+		<!-- Raised button with ripple -->
+		<!--
+		<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+		  Button
+		</button>-->
+
+		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header unselectable">
+		  <header class="mdl-layout__header mdl-color--grey-900">
+		    <div class="mdl-layout__header-row" style="height: 100px">
+		      <!-- Title -->
+		      <span class="mdl-layout-title main">Title</span>
+		      <!-- Add spacer, to align navigation to the right -->
+		      <div class="mdl-layout-spacer"></div>
+		      <!-- Navigation. We hide it in small screens. -->
+		      <!--
+		      <nav class="mdl-navigation mdl-layout--large-screen-only">
+		        <a class="mdl-navigation__link" href="">Link</a>
+		        <a class="mdl-navigation__link" href="">Link</a>
+		        <a class="mdl-navigation__link" href="">Link</a>
+		        <a class="mdl-navigation__link" href="">Link</a>
+		      </nav>-->
+		    </div>
+		  </header>  
+		  <main class="mdl-layout__content">
+		    <div class="page-content"><!-- Your content goes here --></div>
+		  </main>
+		</div>
+
+		<div id="header">
+			
+		</div>
+
+		<!-- No header, and the drawer stays open on larger screens (fixed drawer). -->
+		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer update_hg">
+		  <div class="mdl-layout__drawer update_hg unselectable" style="z-index: 12; position: relative;">
+		    <span class="mdl-layout-title">
+		    	MVL Api
+
+		    	<button type="button" class="mdl-chip api_version mdl-chip--contact">
+		    		<span class="mdl-chip__contact mdl-color--amber mdl-color-text--white">
+		    			<i class="material-icons api_version_icon">menu</i>
+		    		</span>
+
+				    <span class="mdl-chip__text">Api v1.0.0</span>
+				</button>
+		    </span>
+		    <nav class="mdl-navigation">
+		    	<div class="nav_loader">
+					<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+				</div>
+
+		    	<!--
+			      <a class="menu_item_opener closed">
+			      	<i class="material-icons menu_item_opener_arrow">keyboard_arrow_up</i>Just Item
+			      </a>
+			      <div class="menu_item_opener_content closed">
+			      		<a class="mdl-navigation__link mitem" href="#pup" onclick="openPage('page.html',this)">Link xxx</a>
+			      		<a class="mdl-navigation__link mitem" href="#palala" onclick="openPage('page.html',this)">Link a</a>
+
+			      		  <a class="menu_item_opener closed">
+					      	<i class="material-icons menu_item_opener_arrow">keyboard_arrow_up</i>Just Item b
+					      </a>
+					      <div class="menu_item_opener_content closed">
+					      		<a class="mdl-navigation__link mitem" href="#pup" onclick="openPage('page.html',this)">Link xxx</a>
+					      		<a class="mdl-navigation__link mitem" href="#palala" onclick="openPage('page.html',this)">Link a</a>
+					      </div>
+			      </div>
+
+
+			      <a class="mdl-navigation__link mitem" href="#page" onclick="openPage('page.html',this)">Test</a>
+			      <a class="mdl-navigation__link mitem" href="#test" onclick="openPage('page.html',this)">Link c</a>
+			      <a class="mdl-navigation__link mitem" href="#pap" onclick="openPage('page.html',this)">Link d</a>
+			      <a class="mdl-navigation__link mitem" href="#wtf" onclick="openPage('page.html',this)">Link e</a>
+			  -->
+
+			  <!--
+			  <a class="mitem openable">
+			  	<i class="material-icons mitem_arrow">keyboard_arrow_up</i>
+				ITEM
+			  </a>
+			  <div class="mitem_content">
+			  	 <a class="mitem" key="item_a_b">A B</a>
+
+			  	  <a class="mitem autoopenable" key="item_cc">
+				  	
+					ITEM CC
+				  </a>
+				  <div class="mitem_content">
+				  	 <a class="mitem" key="item_c_cc">C CC</a>
+				  	 <a class="mitem" key="item_d_db">D DB</a>
+				  </div>
+
+			  	 <a class="mitem" key="item_a_a_b">A A B</a>
+			  </div>
+			  <a class="mitem" key="item_b">ITEM B</a>
+
+			      -->
+		    </nav>
+		  </div>
+		  <main class="mdl-layout__content">
+		    <div class="page-content"><!-- Your content goes here --></div>
+		  </main>
+		</div>
+
+
+		<div class="menu_bar_mobile">
+		</div>
+
+		<div class="content" style="z-index: 10; position: relative">
+			<div class="page_loader" style="display: none">
+				<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+			</div>
+
+			<iframe id="content_frame" style="height: 100%; z-index: 10; position: relative" onload="" scrolling="yes"/>
+
+
+		</div>
+
+		<!--
+		<pre><code class="language-java">
+	public static void test()
+	{
+		System.out.println("a!");
+	}
+		</code></pre>-->
+
+
+
+	</body>
+
+	
+</html>
