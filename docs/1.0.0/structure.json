@@ -1,21 +1,60 @@
 {
-	"default": "hello",
+	"default": "introduction_hello",
+	
 	"structure": [
 		{
-			"title":"Welcome To MVL",
-			"id":"hello"
-		},
-		{
-			"title":"More Items",
-			"id": "hbt",
+			"title":"Introduction",
+			"id": "introduction",
 			"structure": [
 				{
-					"title": "Plut plat",
-					"id":"bestseller"
+					"title":"Welcome To MVL",
+					"id":"hello",
+					"marks": [
+						"What is MVL",
+						"About Development",
+						"The Basics"
+					]
 				},
 				{
-					"title": "Harry Potter",
-					"id":"harrypotter",
+					"title":"Starting Development",
+					"id":"development",
+					"marks": [
+						"Needed Tools",
+						"Ambient Setup"
+					]
+				}
+			]
+		},
+		{
+			"title":"Utils",
+			"id": "utils",
+			"structure": [
+				{
+					"title": "MRegister",
+					"id":"register",
+					"marks": [
+					]
+				},
+				{
+					"title": "MVersion",
+					"id":"version",
+					"marks": [
+					]
+				},
+				{
+					"title": "JSON",
+					"id":"json",
+					"marks": [
+						"Why JSON?",
+						"Reading and Writing",
+						"Methods",
+						"JSON Serialization",
+						"Performance"
+					]
+				},
+				{
+					"title": "Predictable",
+					"id":"predictable",
 					"marks": [
 						"Title",
 						"Second Section",

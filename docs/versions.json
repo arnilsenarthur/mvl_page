@@ -1,4 +1,4 @@
 {
-	"1.0.0":{},
-	"1.0.1":{}
+	"1.0.0":{"versions":"All","status":"Ready"},
+	"1.0.1":{"versions":"1.16.2+","status":"Developing"}
 }

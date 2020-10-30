@@ -1,9 +1,14 @@
+<!--https://help.eclipse.org/2020-09/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-icons.htm-->
+<!--https://help.eclipse.org/2020-09/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-icons.htm-->
+<!--https://help.eclipse.org/2020-09/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-icons.htm-->
+<!--https://help.eclipse.org/2020-09/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-icons.htm-->
+
 <!DOCTYPE html>
 <html>
 	<head>
 		<title></title>
 	</head>
-	<link rel="stylesheet" href="lib/styles/androidstudio.css">
+	<link rel="stylesheet" href="lib/styles/github.css">
 	<script src="lib/highlight.js"></script>
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -20,19 +25,15 @@
 	<link rel="stylesheet" href="docs_style.css">
 
 
-	<script>hljs.initHighlightingOnLoad();</script>
+	<script>hljs.initHighlightingOnLoad(); hljs.configure({tabReplace: '    '})</script>
 	<script type="text/javascript">
 		//Sidebar buttons
 		$( document ).ready(function() {
-			
-		});
-
-
-
 		//Remover Errors
+		/*
 		window.onerror = function(message, url, lineNumber) {  
         	return true;
-    	};
+    	};*/
 
     	var struct = "";
 
@@ -47,11 +48,15 @@
 		function openPage(content)
 		{
 			$(".page_loader").show();
-			$("#content_frame").contents().find('html').html("");
+			//$("#content_frame").contents().find('html').html("");
+			$("#content_frame").html("");
 
 			$.get("docs/" + api_version + "/" + content + ".html", function( data ) {
-				$("#content_frame").contents().find('html').html((struct + "").replace("$content$",data));
+				//$("#content_frame").contents().find('html').html((struct + "").replace("$content$",data));
+				$("#content_frame").html(data);
 				$(".page_loader").hide();
+				hljs.initHighlighting.called = false;
+				hljs.initHighlighting();
 			});
 			
 
@@ -60,7 +65,9 @@
 
 		function goToMarker(marker)
 		{
-
+			$(".content").animate({
+		        scrollTop: $('.marker_object[marker_id="' + marker + '"]').position().top + 10
+		    }, 500);
 		}
 
 		//Get url parameter
@@ -83,13 +90,14 @@
 
 		if(api_version == undefined)
 		{
-			window.location.href = window.location.href.split("?")[0] + "?api-version=1.0.0";
+			api_version = "1.0.0";
 		}
 
 
-		//Page (If not open hello page of apiversion)
-		var cur_page_path = window.location.hash.substr(1);
 
+
+		//Page (If not open hello page of apiversion)
+		var cur_page_path = (window.location.href).split("#")[1];
 
 		//Load versions info
 		var versions_info;
@@ -101,15 +109,41 @@
 
 			if(versions_info[api_version] == null)
 			{
-				window.location.href = window.location.href.split("?")[0] + "?api-version=1.0.0";
 				return;
 			}
+
+
+
+			$(".curapibtn").html("Api v" + api_version);
+
+			//Load versions
+			/*
+			<tr onclick="alert('1')">
+					      <td class="mdl-data-table__cell--non-numeric"><button type="button" class="mdl-chip">
+							    <span class="mdl-chip__text">Button Chip</span>
+							</button></td>
+					      <td>25</td>
+					      <td>26/10/2020</td>
+					    </tr>	
+			*/
+
+			Object.keys(versions_info).forEach(function(key) {
+			    $("#versions_table").append('<tr onclick="window.location.replace(window.location.href.split(\'?\')[0] + \'?api-version=' + key + '\')" class="' + (api_version == key ? "row_disabled" : "")+ '"><td class="mdl-data-table__cell--non-numeric"><button type="button" class="mdl-chip"><span class="mdl-chip__text">' + key + '</span></button></td><td>' + versions_info[key].versions +'</td><td>' + versions_info[key].status + '</td></tr>');
+			});
+
+			
 
 			//Get info and load menu
 			$.getJSON("docs/" + api_version + "/structure.json", function( data ) 
 			{
-				console.log(data);
+
 				current_structure = data;
+
+
+				if(cur_page_path == null)
+				{
+					cur_page_path = "hello";
+				}
 
 				//Check path
 				let path = cur_page_path.split("_");
@@ -125,6 +159,7 @@
 					if(cob.structure == null)
 					{
 						window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+						window.location.reload();
 							return;
 					}
 
@@ -133,6 +168,7 @@
 						if(cob.structure[j].id == null)
 						{
 							window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+							window.location.reload();
 							return;
 						}
 
@@ -145,11 +181,14 @@
 					}
 				}
 
+
 				if(!found)
 				{
-					window.location.href = window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default;
+					window.location.replace(window.location.href.split("?")[0] + "?api-version=" + api_version + "#" + current_structure.default);
+					window.location.reload();
 							return;
 				}
+
 
 
 				//Load side bar info
@@ -174,7 +213,7 @@
 								ls_data += '<div class="mitem_content">';
 								for(let j = 0; j < ob[i].marks.length; j ++)
 								{
-									ls_data += '<a class="mitem marker" key="mk_' + j + '">' + ob[i].marks[j] + '</a>\n'
+									ls_data += '<a class="mitem marker" key="' + j + '">- ' + ob[i].marks[j] + '</a>\n'
 								}
 
 								ls_data += '</div>';
@@ -208,9 +247,7 @@
 				// <a class="mitem" key="item_c_cc">C CC</a>
 				//$(".mdl-navigation").html(ls_data);
 
-				//Open page and choose selector
-				$('.mitem[key="' + cur_page_path + '"]').addClass("choosen");
-				openPage(cur_page_path);
+				
 
 				//End
 				$(".mitem.openable").on('click', function(event){
@@ -249,17 +286,22 @@
 					}
 					
 				});
+
+				//Open page and choose selector
+				$('.mitem[key="' + cur_page_path + '"]').click();
+
+				let pt = $('.mitem[key="' + cur_page_path + '"]').parent();
+
+				while(pt.hasClass("mitem_content"))
+				{
+					pt.prev().click();
+					pt = pt.parent();
+				}
+
+				openPage(cur_page_path);
 			});
 		});
-
-
-		
-
-		
-
-
-		
-
+		});
 	</script>
 	<style type="text/css">
 		html,body
@@ -297,6 +339,12 @@
 		        <a class="mdl-navigation__link" href="">Link</a>
 		        <a class="mdl-navigation__link" href="">Link</a>
 		      </nav>-->
+
+
+		      <button class="mdl-button mdl-color--amber mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+			    Home
+			  </button>
+
 		    </div>
 		  </header>  
 		  <main class="mdl-layout__content">
@@ -307,6 +355,8 @@
 		<div id="header">
 			
 		</div>
+
+
 
 		<!-- No header, and the drawer stays open on larger screens (fixed drawer). -->
 		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer update_hg">
@@ -319,7 +369,7 @@
 		    			<i class="material-icons api_version_icon">menu</i>
 		    		</span>
 
-				    <span class="mdl-chip__text">Api v1.0.0</span>
+				    <span class="mdl-chip__text curapibtn" onclick="$('.version_dialog_bg').addClass('shown');"></span>
 				</button>
 		    </span>
 		    <nav class="mdl-navigation">
@@ -389,18 +439,48 @@
 				<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
 			</div>
 
-			<iframe id="content_frame" style="height: 100%; z-index: 10; position: relative" onload="" scrolling="yes"/>
+			<!--<iframe id="content_frame" style="height: 100%; z-index: 10; position: relative" onload="" scrolling="yes"/>-->
 
-
+			<div id="content_frame" style="z-index: 10; position: relative"></div>
 		</div>
 
-		<!--
-		<pre><code class="language-java">
-	public static void test()
-	{
-		System.out.println("a!");
-	}
-		</code></pre>-->
+		<div class="version_dialog_bg">
+			<div class="demo-card-square mdl-card mdl-shadow--2dp content_card version_dialog">
+			    <div class="mdl-card__supporting-text">
+			    	<h4 style="padding-top: 0px; margin-top: 0px">API Version</h4>
+			    	<div class="card_content">
+			    		<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp version_tables">
+					  <thead>
+					    <tr>
+					      <th class="mdl-data-table__cell--non-numeric">API Version</th>
+					      <th>Minecraft Versions</th>
+					      <th>Date</th>
+					    </tr>
+					  </thead>
+					  <tbody id="versions_table">
+					    	<!--
+					    	<tr onclick="alert('1')">
+					      <td class="mdl-data-table__cell--non-numeric"><button type="button" class="mdl-chip">
+							    <span class="mdl-chip__text">Button Chip</span>
+							</button></td>
+					      <td>25</td>
+					      <td>26/10/2020</td>
+					    </tr>	-->		    
+					  </tbody>
+					</table>
+			    	</div>
+			    </div>
+
+			    
+
+			    <div class="mdl-card__actions mdl-card--border unselectable" style="position: absolute; bottom: 0px">
+				  <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="$('.version_dialog_bg').removeClass('shown');">
+				    Close
+				  </a>
+				</div>
+			</div>
+		</div>
+		
 
 
 

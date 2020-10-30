@@ -1,0 +1,444 @@
+<div class="demo-card-square mdl-card mdl-shadow--2dp content_card">
+  <div class="mdl-card__supporting-text">
+   	
+
+   	<h4>JSON Notation</h4>
+
+
+	<span class="mdl-chip mdl-color--green">
+	    <span class="mdl-chip__text">Secure</span>
+	</span>
+
+	<span class="mdl-chip mdl-color--yellow">
+	    <span class="mdl-chip__text">Core Utils</span>
+	</span>
+
+	<span class="mdl-chip mdl-color--cyan">
+	    <span class="mdl-chip__text">Author: Árnilsen Arthur</span>
+	</span>
+
+	<div class="separator">
+	</div>
+
+
+	<h4 class="marker_object" marker_id="0">Why JSON? And why to use internal library?</h4>
+
+	Java Script Object Notation (JSON) is the notation used by default by MVL in the settings and information of the mods, to standardize for the developer and facilitate his work.<br><br>
+
+	To simplify further, MVL comes with a package created by Árnilsen Arthur with a set of classes optimized for using JSON's directly in the MVL api. The MVL Api keeps key order, so json objects will ever keep it order<br><br>
+
+	<div class="code-card mdl-card mdl-shadow--2dp content_card">
+	  <div class="code-card-title">
+		<img src="icons/package_obj.svg" class="java_icon">
+  		com.mvlproject.json
+  	  </div>
+	  <div class="mdl-card__supporting-text">
+	  	<img src="icons/class_obj.svg" class="java_icon"> MJSONItem<br>
+	  	<img src="icons/class_obj.svg" class="java_icon"> MJSONObject<br>
+	  	<img src="icons/class_obj.svg" class="java_icon"> MJSONArray<br>
+	  	<img src="icons/class_obj.svg" class="java_icon"> MJSONParseException<br>
+	  	<img src="icons/interface_obj.svg" class="java_icon"> MJSONSerializable<br>
+	  </div>
+	</div>
+
+<div class="separator">
+</div>
+<h4 class="marker_object" marker_id="1">Reading and writing JSON</h4>
+
+	To read JSON files you must use MJSONItem class, that is the base class for MJSONObject and MJSONArray:
+<pre><code class="language-java">//Parse a string to MJSONItem
+MJSONItem item = MJSONItem.parse("{\"id\":\"minecraft:diamond\",\"amount\":13}");
+
+//Check if MJSONItem is array
+if(item.isArray())
+{
+	//Cast array
+	MJSONArray array = (MJSONArray) item;
+
+	//Iterate over all objects in array
+	for(int i = 0; i < array.length(); i ++)
+		System.out.println(array.at(i));
+}
+else
+{
+	//Cast object
+	MJSONObject object = (MJSONObject) item;
+
+	//Get properties from object
+	String id = object.getString("id");
+	int amount = object.getInteger("amount");
+}
+</code></pre>
+
+To write/modify MJSONObject you can do as following:
+
+<pre><code class="language-java">//Create empty MJSONObject
+MJSONObject object = new MJSONObject();
+
+//Set a property of object
+object.put("id",13); //Add property in the end of MJSON
+object.put("x",14); //Add property to the end of MJSON
+
+object.put("id",19); //Replace a value from key
+
+object.insert(1,"middle",18); //Insert property in a choosen position
+
+//Transform JSON to string
+String obj_s = object.toString();
+String obj_s_ident = object.toStringBeautify("\t"); //Ident JSON with \t and line-breaks
+</code></pre>
+
+<pre><code class="language-json output">{"id":19,"middle":18,"x":14}
+
+{
+	"id": 19,
+	"middle": 18,
+	"x": 14
+}
+</code></pre>
+
+To write/modify MJSONArray you can do as following:
+<pre><code class="language-java">MJSONArray array = (MJSONArray) MJSONItem.parse("[2,5,true,{\"b\":null,\"c\":13.4}");
+
+array.add(15); //Add object to the last position
+array.replace(2,false); //Replace value in position
+array.getMJSONObject(3).put("b","Hello World!"); //Get object in array and modifiy value
+array.insert(2,true); //Insert value at position
+array.removeFirst(); //Remove first value from array
+
+String arr_s = array.toString(); 
+String arr_s_ident = array.toStringBeautify("\t"); //Ident JSON with \t and line-breaks
+</code></pre>
+
+<pre><code class="language-json output">[5,true,false,{"b":"Hello World!","c":13.4},15]
+
+[
+    5,
+    true,
+    false,
+    {
+        "b": "Hello World!",
+        "c": 13.4
+    },
+    15
+]
+</code></pre>
+
+<div class="separator">
+</div>
+<h4 class="marker_object" marker_id="2">Methods</h4>
+
+<div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/class_obj.svg" class="java_icon">
+		MJSONObject
+	  </div>
+  <div class="mdl-card__supporting-text">
+  	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject insert(int index,String key,Object o):<br>
+  	<div class="java_text">Insert object in index of MJSONObject (Ordered Keys)</div>
+  	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject put(String key, Object o):<br>
+	<div class="java_text">Change value of a key</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject remove(String key):<br>
+	<div class="java_text">Remove item placed with a key</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int length():<br>
+	<div class="java_text">Return the number of keys in object</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String key(int index):<br>
+	<div class="java_text">Get the key at index</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">Object value(int index):<br>
+	<div class="java_text">Get value at index</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int indexOf(String key):<br>
+	<div class="java_text">Get index of a key</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean hasKey(String key):<br>
+	<div class="java_text">Check if object contains a key</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean contains(String key):<br>
+	<div class="java_text">Check if object contains a key</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">Object get(String key):<br>
+	<div class="java_text">Get object with key</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject getMJSONObject(String key):<br>
+	<div class="java_text">Get a MJSONObject</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray getMJSONArray(String key):<br>
+	<div class="java_text">Get a MJSONArray</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int getInteger(String key):<br>
+	<div class="java_text">Get a int</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean getBoolean(String key):<br>
+	<div class="java_text">Get a boolean</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">float getFloat(String key):<br>
+	<div class="java_text">Get a float</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String getString(String key):<br>
+	<div class="java_text">Get a String</div>
+	
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean isArray():<br>
+	<div class="java_text">Is this object an array?</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String toStringBeautify(String delimiter, String current):<br>
+	<div class="java_text">Main Stringify JSON with delimiter/tabulation Call</div>
+
+	<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String toString():<br>
+	<div class="java_text">Main Stringify JSON</div>
+
+  </div>
+</div>
+
+<div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/class_obj.svg" class="java_icon">
+		MJSONArray
+	  </div>
+  	<div class="mdl-card__supporting-text">
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject insert(int index,String key,Object o):<br>
+  		<div class="java_text">Insert object in index of MJSONObject (Ordered Keys)</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">Object at(int index):<br>
+		<div class="java_text">Get object at index of MJSONArray</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray add(Object o):<br>
+		<div class="java_text">Add object to the end of MJSONArray</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray remove(int index):<br>
+		<div class="java_text">Remove object from a index of MJSONArray</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray insert(int index,Object o):<br>
+		<div class="java_text">Insert object at index of MJSONArray</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray replace(int index,Object o):<br>
+		<div class="java_text">Replace object at index of MJSONArray</div>
+
+
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">Object get(int index):<br>
+		<div class="java_text">Get object at index of MJSONArray (Like at)</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject getMJSONObject(int index):<br>
+		<div class="java_text">Get a MJSONObject</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONArray getMJSONArray(int index):<br>
+		<div class="java_text">Get a MJSONArray</div>
+		
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int getInteger(int index):<br>
+		<div class="java_text">Get a int</div>
+		
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean getBoolean(int index):<br>
+		<div class="java_text">Get a boolean</div>
+		
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">float getFloat(int index):<br>
+		<div class="java_text">Get a float</div>
+		
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String getString(int index):<br>
+		<div class="java_text">Get a String</div>
+		
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">boolean isArray():<br>
+		<div class="java_text">Is this object an array?</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String toStringBeautify(String delimiter, String current):<br>
+		<div class="java_text">Main Stringify JSON with delimiter/tabulation Call</div>
+
+		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">String toString():<br>
+		<div class="java_text">Main Stringify JSON</div>
+
+
+
+  	</div>
+  </div>
+
+ <div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/class_obj.svg" class="java_icon">
+		MJSONItem
+	  </div>
+  	<div class="mdl-card__supporting-text">
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">static MJSONItem parseWithoutExceptions(String content):<br>
+  		<div class="java_text">Parse a JSON from a string ignoring all exceptions (Just returning null)</div>
+
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">static MJSONItem parse(String content):<br>
+  		<div class="java_text">Parse a JSON from a string</div>
+  	</div>
+  </div>
+
+ <div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/class_obj.svg" class="java_icon">
+		MJSONParseException
+	  </div>
+  	<div class="mdl-card__supporting-text">
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int getLine()<br>
+  		<div class="java_text">Get the line of the error</div>
+
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">int getColumn()<br>
+  		<div class="java_text">Get the column of the error</div>
+  	</div>
+  </div>
+
+
+
+<div class="separator">
+</div>
+<h4 class="marker_object" marker_id="3">JSON Serialization</h4>
+	Classes that implements the interface MJSONSerializable have methods to serialize and deserialize object to json and vice versa. That helps delevopers to save data as they want, and to create config for their mods and another internal items used by the MVLLoader:
+
+
+	<pre><code class="language-java">public class MRegister implements MJSONSerializable
+{
+	...
+
+	@Override
+	public void deserializeFromMJSON(MJSONObject object) 
+	{
+		this.group = object.getString("group");
+		this.key = object.getString("key");
+	}
+
+	@Override
+	public MJSONObject serializeToMJSON() 
+	{
+		return new MJSONObject().put("group", group).put("key", key);
+	}
+}</code></pre>
+
+
+ <div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/interface_obj.svg" class="java_icon">
+		MJSONSerializable
+	  </div>
+  	<div class="mdl-card__supporting-text">
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">void deserializeFromMJSON(MJSONObject object) <br>
+  		<div class="java_text">Desserialize object from JSON</div>
+
+  		<img src="icons/publicmethod_obj.svg" class="java_icon java_icon_up">MJSONObject serializeToMJSON() <br>
+  		<div class="java_text">Serialize object to JSON</div>
+  	</div>
+  </div>
+
+
+<div class="separator">
+</div>
+<h4 class="marker_object" marker_id="4">Performance</h4>
+Benchmark in comparision between JavaJson.jar and MVL JSON Api using 11 files:
+<pre><code class="language-json output">File 1 size: 0.065KB
+- LIB Time: 0,027545s
+- LIB Size: 187
+- MVL Time: 0,003547s
+- MVL Size: 306
+-   Time q: 7.765174
+
+File 2 size: 0.947KB
+- LIB Time: 0,002347s
+- LIB Size: 833
+- MVL Time: 0,000900s
+- MVL Size: 890
+-   Time q: 2.6080675
+
+File 3 size: 8.67KB
+- LIB Time: 0,007065s
+- LIB Size: 8686
+- MVL Time: 0,004902s
+- MVL Size: 8302
+-   Time q: 1.4413457
+
+File 4 size: 8.67KB
+- LIB Time: 0,001832s
+- LIB Size: 8686
+- MVL Time: 0,002661s
+- MVL Size: 8302
+-   Time q: 0.68827266
+
+File 5 size: 0.638KB
+- LIB Time: 0,000412s
+- LIB Size: 1139
+- MVL Time: 0,000459s
+- MVL Size: 1178
+-   Time q: 0.89860445
+
+File 6 size: 0.034KB
+- LIB Time: 0,000711s
+- LIB Size: 394
+- MVL Time: 0,000326s
+- MVL Size: 460
+-   Time q: 2.1839116
+
+File 7 size: 10.615KB
+- LIB Time: 0,008325s
+- LIB Size: 17622
+- MVL Time: 0,009609s
+- MVL Size: 17494
+-   Time q: 0.86640507
+
+File 8 size: 745.632KB
+- LIB Time: 0,078323s
+- LIB Size: 604706
+- MVL Time: 0,061013s
+- MVL Size: 577908
+-   Time q: 1.2837154
+
+File 9 size: 0.111KB
+- LIB Time: 0,001033s
+- LIB Size: 377
+- MVL Time: 0,000813s
+- MVL Size: 446
+-   Time q: 1.2717203
+
+File 10 size: 0.06KB
+- LIB Time: 0,000563s
+- LIB Size: 196
+- MVL Time: 0,000434s
+- MVL Size: 315
+-   Time q: 1.2998846
+
+File 11 size: 189778.22KB
+- LIB Time: 14,129348s
+- LIB Size: 246338011
+- MVL Time: 9,850059s
+- MVL Size: 191758425
+-   Time q: 1.434443
+</code></pre>
+<h5>Final Results</h5>
+MVL JSON Api was faster in the most cases (8/11), getting to be 6 times faster than external lib. In RAM/Object size comparision, MVL JSON will be larger in small json files but smallest on medium/big files.<br><br>
+The parser works with only a for loop, that iterates every char of source string, and objects uses arrays to store their objects. To achieve best results you can change some internal parser variables that are used when parsing files:
+<br><br>
+<div class="code-card mdl-card mdl-shadow--2dp content_card">
+  <div class="code-card-title">
+	<img src="icons/class_obj.svg" class="java_icon">
+		MJSONItem
+	  </div>
+  	<div class="mdl-card__supporting-text">
+  		<img src="icons/publicfield_obj.svg" class="java_icon">static int DEPTH = 24:<br>
+  		<div class="java_text">Supported JSON Object Depth for keys while parsing</div>
+
+  		<img src="icons/publicfield_obj.svg" class="java_icon">static int ALLOC_BLOCK_SIZE = 32:<br>
+  		<div class="java_text">Array size increment per parser allocation call</div>
+  	</div>
+</div>
+<br><br>
+The <b>DEPTH</b> fields represent the maximum DEPTH of a JSONObject while parsing it (Default is 24). The <b>ALLOC_BLOCK_SIZE</b> represents the size of block added by parser when it calls allocation function. This means that parser only will need to increase the Object Array length on every ALLOC_BLOCK_SIZE amount of objects added. The only problem is that when you are working with smallest objects, too big ALLOC_BLOCK_SIZE value will represent a performance loss on deallocation of unused space:
+<pre>
+	<code class="language-json output">//Empty Object
+VisualObject:{} Keys:[] Values:[]
+
+//Parser call Alloc (With ALLOC_BLOCK_SIZE defined as 6 for example)
+VisualObject:{} Keys:[null,null,null,null,null,null] Values:[null,null,null,null,null,null]
+
+//Put some itens on Object
+VisualObject:{"tell_me":"Hello","the_truth":true,"apples":4,"nothing":null} Keys:["tell_me","the_truth","apples","nothing",null,null] Values:["Hello",true,4,null,null,null]
+
+//Parser call Dealloc (Remove unused indexes)
+VisualObject:{"tell_me":"Hello","the_truth":true,"apples":4,"nothing":null} Keys:["tell_me","the_truth","apples","nothing"] Values:["Hello",true,4,null]</code>
+</pre>
+
+  </div>
+</div>
+
+
