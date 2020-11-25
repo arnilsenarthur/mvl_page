@@ -1,4 +1,4 @@
-TESTEBB
+BUSCANDO RESULTADOS...
 
 <script>
   var getJSON = function(url, callback) {
@@ -15,16 +15,44 @@ TESTEBB
     };
     xhr.send();
 };
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
   
-  function test()
-  {
-      getJSON('https://api.serphouse.com/serp/live?q=how+to+make+money+online&api_token=QjjzTkqSySMjJdfZsg7etISeKXIItBDf7xW7glBSBQQdejTcjjLVwaXwt0bZ',
+  function run()
+  {	
+	  let query = getUrlVars()["q"];
+      getJSON('https://api.serphouse.com/serp/live?q=' + query + '&api_token=QjjzTkqSySMjJdfZsg7etISeKXIItBDf7xW7glBSBQQdejTcjjLVwaXwt0bZ',
       function(err, data) {
         if (err !== null) {
           alert('Something went wrong: ' + err);
         } else {
-          alert('Your query count: ' + data.query.count);
+          let results = data.results.results.organic;
+		  
+		  let content = "";
+		
+		  let rs = [];
+		  for(let i = 0; i < Math.min(6,results.length); i ++)
+		  {
+		  /*
+			rs.push({
+				url: results[i].link,
+				title: results[i].title
+			});
+			*/
+			
+			content += "<a href='" + results[i].link + "'>" + results[i].title + "</a><br>";
+		  }
+		  
+		  document.body.innerHTML = content;
         }
       });
   }
+  
+  run();
 </script>
